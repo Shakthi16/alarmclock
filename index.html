@@ -1,0 +1,460 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skeuomorphic Clock App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #E6E6E6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    #app-container {
+      background-color: #F1F1F1;
+      border-radius: 25px;
+      box-shadow: 6px 6px 12px #d1d9d9, -6px -6px 12px #ffffff;
+      padding: 20px;
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 9 / 16; /* Maintain 9:16 aspect ratio */
+    }
+
+    .tab-button {
+      background-color: #F1F1F1;
+      box-shadow: 4px 4px 6px #d1d9d9, -4px -4px 6px #ffffff;
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 18px;
+      color: #5D6B6B;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .tab-button.active {
+      background-color: #B2D6D6;
+      color: #ffffff;
+    }
+
+    .tab-button .tooltip {
+      visibility: hidden;
+      width: 120px;
+      background-color: #5D6B6B;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px 0;
+      position: absolute;
+      z-index: 1;
+      top: 100%; /* Position the tooltip below the button */
+      left: 50%;
+      margin-left: -60px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tab-button .tooltip::after {
+      content: "";
+      position: absolute;
+      top: -5px; /* At the bottom of the tooltip */
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #5D6B6B transparent transparent transparent;
+    }
+
+    .tab-button:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .content {
+      display: none;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    .button {
+      padding: 10px 20px;
+      background-color: #F1F1F1;
+      box-shadow: 4px 4px 6px #d1d9d9, -4px -4px 6px #ffffff;
+      border-radius: 12px;
+      font-weight: bold;
+      color: #5D6B6B;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .button:active {
+      box-shadow: inset 2px 2px 4px #d1d9d9, inset -2px -2px 4px #ffffff;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 12px;
+      background-color: #F1F1F1;
+      box-shadow: inset 4px 4px 6px #d1d9d9, inset -4px -4px 6px #ffffff;
+      color: #5D6B6B;
+      font-weight: bold;
+    }
+
+    .alarm-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #F1F1F1;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      box-shadow: 4px 4px 6px #d1d9d9, -4px -4px 6px #ffffff;
+      color: #5D6B6B;
+      font-weight: bold;
+    }
+
+    .world-time {
+      margin-top: 20px;
+      text-align: center;
+      color: #5D6B6B;
+      font-weight: bold;
+    }
+
+    .world-time-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #F1F1F1;
+      border-radius: 12px;
+      box-shadow: 4px 4px 6px #d1d9d9, -4px -4px 6px #ffffff;
+    }
+
+    .world-time-item img {
+      width: 30px;
+      height: 20px;
+      border-radius: 4px;
+    }
+
+    .stopwatch-container, .alarm-container, .timer-container {
+      background-color: #F1F1F1;
+      border-radius: 25px;
+      box-shadow: 6px 6px 12px #d1d9d9, -6px -6px 12px #ffffff;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .indian-time-container {
+      background-color: #D6E6E6;
+      border-radius: 25px;
+      box-shadow: 6px 6px 12px #d1d9d9, -6px -6px 12px #ffffff;
+      padding: 20px;
+      margin-top: 20px;
+      text-align: center;
+      color: #5D6B6B;
+      font-weight: bold;
+    }
+
+    .lap-list {
+      margin-top: 20px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .lap-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #F1F1F1;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      box-shadow: 4px 4px 6px #d1d9d9, -4px -4px 6px #ffffff;
+      color: #5D6B6B;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <!-- Tabs -->
+    <div class="flex justify-around mb-6 space-x-2">
+      <button id="clock-tab" class="tab-button active">
+        <i class="fas fa-clock"></i>
+        <span class="tooltip">Clock</span>
+      </button>
+      <button id="stopwatch-tab" class="tab-button">
+        <i class="fas fa-stopwatch"></i>
+        <span class="tooltip">Stopwatch</span>
+      </button>
+      <button id="alarm-tab" class="tab-button">
+        <i class="fas fa-bell"></i>
+        <span class="tooltip">Alarm</span>
+      </button>
+      <button id="timer-tab" class="tab-button">
+        <i class="fas fa-hourglass-start"></i>
+        <span class="tooltip">Timer</span>
+      </button>
+    </div>
+
+    <!-- Clock Section -->
+    <div id="clock" class="content active">
+      <div class="indian-time-container">
+        <p>India</p>
+        <p id="delhi-time"></p>
+      </div>
+      <h2 class="text-center text-3xl font-bold text-[#5D6B6B] mt-6">World Clock</h2>
+      <div class="world-time">
+        <div class="world-time-item">
+          <img src="https://flagcdn.com/w320/us.png" alt="Flag of the United States">
+          <span>New York</span>
+          <span id="ny-time"></span>
+        </div>
+        <div class="world-time-item">
+          <img src="https://flagcdn.com/w320/gb.png" alt="Flag of the United Kingdom">
+          <span>London</span>
+          <span id="london-time"></span>
+        </div>
+        <div class="world-time-item">
+          <img src="https://flagcdn.com/w320/jp.png" alt="Flag of Japan">
+          <span>Tokyo</span>
+          <span id="tokyo-time"></span>
+        </div>
+        <div class="world-time-item">
+            <img src="https://flagcdn.com/w320/ae.png" alt="Flag of UAE">
+            <span>Dubai</span>
+            <span id="dubai-time"></span>
+          </div>
+        <div class="world-time-item">
+            <img src="https://flagcdn.com/w320/fr.png" alt="Flag of France">
+            <span>Paris</span>
+            <span id="paris-time"></span>
+          </div>
+          <div class="world-time-item">
+            <img src="https://flagcdn.com/w320/kr.png" alt="Flag of South Korea">
+                <span>Seoul</span>
+                <span id="seoul-time"></span>
+              </div>
+              <div class="world-time-item">
+                <img src="https://flagcdn.com/w320/au.png" alt="Flag of Australia">
+                <span>Sydney</span>
+                <span id="sydney-time"></span>
+              </div>
+      </div>
+    </div>
+
+    <!-- Stopwatch Section -->
+    <div id="stopwatch" class="content">
+      <h2 class="text-center text-3xl font-bold text-[#5D6B6B]">Stopwatch</h2>
+      <div class="stopwatch-container">
+        <p id="stopwatch-time" class="text-center text-2xl mt-4 font-bold text-[#5D6B6B]">00:00:00</p>
+        <div class="flex justify-around mt-4 space-x-2">
+          <button id="start-stopwatch" class="button"><i class="fas fa-play"></i></button>
+          <button id="stop-stopwatch" class="button"><i class="fas fa-stop"></i></button>
+          <button id="reset-stopwatch" class="button"><i class="fas fa-redo"></i></button>
+          <button id="lap-stopwatch" class="button"><i class="fas fa-flag"></i></button>
+        </div>
+        <div id="lap-list" class="lap-list"></div>
+      </div>
+    </div>
+
+    <!-- Alarm Section -->
+    <div id="alarm" class="content">
+      <h2 class="text-center text-3xl font-bold text-[#5D6B6B]">Alarm</h2>
+      <div class="alarm-container">
+        <input id="alarm-time" type="time">
+        <select id="alarm-period">
+          <option value="AM">AM</option>
+          <option value="PM">PM</option>
+        </select>
+        <button id="set-alarm" class="button w-full">Set Alarm</button>
+        <div id="alarm-list" class="mt-4"></div>
+      </div>
+    </div>
+
+    <!-- Timer Section -->
+    <div id="timer" class="content">
+      <h2 class="text-center text-3xl font-bold text-[#5D6B6B]">Timer</h2>
+      <div class="timer-container">
+        <div class="flex justify-around mt-4 space-x-2">
+          <input id="timer-hours" type="number" placeholder="HH" min="0" class="w-1/3">
+          <input id="timer-minutes" type="number" placeholder="MM" min="0" class="w-1/3">
+          <input id="timer-seconds" type="number" placeholder="SS" min="0" class="w-1/3">
+        </div>
+        <p id="timer-time" class="text-center text-2xl mt-4 font-bold text-[#5D6B6B]">00:00:00</p>
+        <div class="flex justify-around mt-4">
+          <button id="start-timer" class="button"><i class="fas fa-play"></i></button>
+          <button id="pause-timer" class="button"><i class="fas fa-pause"></i></button>
+          <button id="reset-timer" class="button"><i class="fas fa-redo"></i></button>
+        </div>
+      
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab Switching
+    const tabs = document.querySelectorAll(".tab-button");
+    const contents = document.querySelectorAll(".content");
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => t.classList.remove("active"));
+        contents.forEach((c) => c.classList.remove("active"));
+
+        tab.classList.add("active");
+        contents[index].classList.add("active");
+      });
+    });
+
+    // Clock
+    function updateClock() {
+      const now = new Date();
+
+      const nyTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+      const londonTime = new Date(now.toLocaleString("en-GB", { timeZone: "Europe/London" }));
+      const tokyoTime = new Date(now.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }));
+      const delhiTime = new Date(now.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }));
+
+      document.getElementById("ny-time").textContent = `${String(nyTime.getHours()).padStart(2, "0")}:${String(nyTime.getMinutes()).padStart(2, "0")}`;
+      document.getElementById("london-time").textContent = `${String(londonTime.getHours()).padStart(2, "0")}:${String(londonTime.getMinutes()).padStart(2, "0")}`;
+      document.getElementById("tokyo-time").textContent = `${String(tokyoTime.getHours()).padStart(2, "0")}:${String(tokyoTime.getMinutes()).padStart(2, "0")}`;
+      document.getElementById("delhi-time").textContent = `${String(delhiTime.getHours()).padStart(2, "0")}:${String(delhiTime.getMinutes()).padStart(2, "0")}:${String(delhiTime.getSeconds()).padStart(2, "0")}`;
+      const dubaiTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Dubai" }));
+      document.getElementById("dubai-time").textContent = `${String(dubaiTime.getHours()).padStart(2, "0")}:${String(dubaiTime.getMinutes()).padStart(2, "0")}`;
+      const parisTime = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Paris" }));
+      document.getElementById("paris-time").textContent = `${String(parisTime.getHours()).padStart(2, "0")}:${String(parisTime.getMinutes()).padStart(2, "0")}`;
+       // Seoul (UTC+9)
+      const seoulTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+      document.getElementById("seoul-time").textContent = `${String(seoulTime.getHours()).padStart(2, "0")}:${String(seoulTime.getMinutes()).padStart(2, "0")}`;
+      const sydneyTime = new Date(now.toLocaleString("en-US", { timeZone: "Australia/Sydney" }));
+      document.getElementById("sydney-time").textContent = `${String(sydneyTime.getHours()).padStart(2, "0")}:${String(sydneyTime.getMinutes()).padStart(2, "0")}`;
+      }
+    setInterval(updateClock, 1000);
+
+    // Stopwatch
+    let stopwatchInterval;
+    let stopwatchTime = 0;
+    const stopwatchDisplay = document.getElementById("stopwatch-time");
+    const lapList = document.getElementById("lap-list");
+
+    document.getElementById("start-stopwatch").addEventListener("click", () => {
+      if (!stopwatchInterval) {
+        stopwatchDisplay.classList.remove("fade-out");
+        stopwatchDisplay.classList.add("fade-in");
+        stopwatchInterval = setInterval(() => {
+          stopwatchTime++;
+          const hours = String(Math.floor(stopwatchTime / 3600)).padStart(2, "0");
+          const minutes = String(Math.floor((stopwatchTime % 3600) / 60)).padStart(2, "0");
+          const seconds = String(stopwatchTime % 60).padStart(2, "0");
+          stopwatchDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+        }, 1000);
+      }
+    });
+
+    document.getElementById("stop-stopwatch").addEventListener("click", () => {
+      if (stopwatchInterval) {
+        stopwatchDisplay.classList.remove("fade-in");
+        stopwatchDisplay.classList.add("fade-out");
+        clearInterval(stopwatchInterval);
+        stopwatchInterval = null;
+      }
+    });
+
+    document.getElementById("reset-stopwatch").addEventListener("click", () => {
+      clearInterval(stopwatchInterval);
+      stopwatchInterval = null;
+      stopwatchTime = 0;
+      stopwatchDisplay.textContent = "00:00:00";
+      lapList.innerHTML = "";
+    });
+
+    document.getElementById("lap-stopwatch").addEventListener("click", () => {
+      const lapTime = stopwatchDisplay.textContent;
+      const lapItem = document.createElement("div");
+      lapItem.className = "lap-item";
+      lapItem.textContent = `Lap: ${lapTime}`;
+      lapList.appendChild(lapItem);
+    });
+
+    // Alarm
+    const alarmList = document.getElementById("alarm-list");
+
+    document.getElementById("set-alarm").addEventListener("click", () => {
+      const time = document.getElementById("alarm-time").value;
+      const period = document.getElementById("alarm-period").value;
+
+      if (time) {
+        const alarmItem = document.createElement("div");
+        alarmItem.className = "alarm-item";
+        alarmItem.innerHTML = `<span>${time} ${period}</span> <button class='button'>Remove</button>`;
+
+        alarmItem.querySelector("button").addEventListener("click", () => {
+          alarmItem.remove();
+        });
+
+        alarmList.appendChild(alarmItem);
+      }
+    });
+
+    // Timer
+    let timerInterval;
+    let timerTime = 0;
+    const timerDisplay = document.getElementById("timer-time");
+
+    document.getElementById("start-timer").addEventListener("click", () => {
+      const hours = parseInt(document.getElementById("timer-hours").value) || 0;
+      const minutes = parseInt(document.getElementById("timer-minutes").value) || 0;
+      const seconds = parseInt(document.getElementById("timer-seconds").value) || 0;
+      timerTime = (hours * 3600) + (minutes * 60) + seconds;
+
+      if (!timerInterval && timerTime > 0) {
+        timerInterval = setInterval(() => {
+          if (timerTime > 0) {
+            timerTime--;
+            const displayHours = String(Math.floor(timerTime / 3600)).padStart(2, "0");
+            const displayMinutes = String(Math.floor((timerTime % 3600) / 60)).padStart(2, "0");
+            const displaySeconds = String(timerTime % 60).padStart(2, "0");
+            timerDisplay.textContent = `${displayHours}:${displayMinutes}:${displaySeconds}`;
+          } else {
+            clearInterval(timerInterval);
+            alert("Time's up!");
+          }
+        }, 1000);
+      }
+    });
+
+    document.getElementById("pause-timer").addEventListener("click", () => {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    });
+
+    document.getElementById("reset-timer").addEventListener("click", () => {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timerTime = 0;
+      timerDisplay.textContent = "00:00:00";
+      document.getElementById("timer-hours").value = "";
+      document.getElementById("timer-minutes").value = "";
+      document.getElementById("timer-seconds").value = "";
+    });
+  </script>
+</body>
+</html>
