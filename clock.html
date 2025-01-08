@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neumorphic Analog Clock</title>
+  <style>
+    /* Body Styles */
+    body {
+      background: transparent;  /* No background */
+      margin: 0;  /* Remove margin */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Arial', sans-serif;
+    }
+
+    /* Clock Container */
+    .neumorphic-clock {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      background: #e0e0e0;
+      border-radius: 50%;
+      box-shadow: 10px 10px 20px rgba(190, 190, 190, 0.6), -10px -10px 20px rgba(255, 255, 255, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    /* Clock face (inside the clock) */
+    .clock-face {
+      position: relative;
+      width: 90%;
+      height: 90%;
+      background: #e0e0e0;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: inset 6px 6px 15px rgba(190, 190, 190, 0.4), inset -6px -6px 15px rgba(255, 255, 255, 0.7);
+    }
+
+    /* Hour, minute, and second hands */
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom;
+      transition: transform 0.5s cubic-bezier(0.4, 2.3, 0.3, 1);
+      border-radius: 50%;
+    }
+
+    /* Hour hand */
+    .hour-hand {
+      width: 8px;
+      height: 40px;
+      background-color: #333;
+    }
+
+    /* Minute hand */
+    .minute-hand {
+      width: 5px;
+      height: 60px;
+      background-color: #555;
+    }
+
+    /* Second hand */
+    .second-hand {
+      width: 1px;
+      height: 70px;
+      background-color: #f44336;
+    }
+
+    /* Center dot */
+    .center-dot {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background-color: #e0e0e0;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="neumorphic-clock">
+    <div class="clock-face">
+      <div class="hand hour-hand" id="hour"></div>
+      <div class="hand minute-hand" id="minute"></div>
+      <div class="hand second-hand" id="second"></div>
+      <div class="center-dot"></div>
+    </div>
+  </div>
+
+  <script>
+    function updateClock() {
+      const hourElem = document.getElementById('hour');
+      const minuteElem = document.getElementById('minute');
+      const secondElem = document.getElementById('second');
+
+      const now = new Date();
+      const indiaOffset = 5.5 * 60 * 60 * 1000;
+      const indiaTime = new Date(now.getTime() + indiaOffset);
+
+      const hours = indiaTime.getHours();
+      const minutes = indiaTime.getMinutes();
+      const seconds = indiaTime.getSeconds();
+
+      const hourDeg = (hours % 12) * 30 + (minutes / 2);
+      const minuteDeg = minutes * 6;
+      const secondDeg = seconds * 6;
+
+      hourElem.style.transform = `rotate(${hourDeg + 180}deg)`;
+      minuteElem.style.transform = `rotate(${minuteDeg + 180}deg)`;
+      secondElem.style.transform = `rotate(${secondDeg + 180}deg)`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
