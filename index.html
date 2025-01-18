@@ -337,30 +337,44 @@
       });
     });
 
-    // Clock
     function updateClock() {
-      const now = new Date();
+  const now = new Date();
 
-      const nyTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
-      const londonTime = new Date(now.toLocaleString("en-GB", { timeZone: "Europe/London" }));
-      const tokyoTime = new Date(now.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }));
-      const delhiTime = new Date(now.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }));
+  // New York
+  const nyTime = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", hour: "2-digit", minute: "2-digit",  hour12: false }).format(now);
+  document.getElementById("ny-time").textContent = nyTime;
 
-      document.getElementById("ny-time").textContent = `${String(nyTime.getHours()).padStart(2, "0")}:${String(nyTime.getMinutes()).padStart(2, "0")}`;
-      document.getElementById("london-time").textContent = `${String(londonTime.getHours()).padStart(2, "0")}:${String(londonTime.getMinutes()).padStart(2, "0")}`;
-      document.getElementById("tokyo-time").textContent = `${String(tokyoTime.getHours()).padStart(2, "0")}:${String(tokyoTime.getMinutes()).padStart(2, "0")}`;
-      document.getElementById("delhi-time").textContent = `${String(delhiTime.getHours()).padStart(2, "0")}:${String(delhiTime.getMinutes()).padStart(2, "0")}:${String(delhiTime.getSeconds()).padStart(2, "0")}`;
-      const dubaiTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Dubai" }));
-      document.getElementById("dubai-time").textContent = `${String(dubaiTime.getHours()).padStart(2, "0")}:${String(dubaiTime.getMinutes()).padStart(2, "0")}`;
-      const parisTime = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Paris" }));
-      document.getElementById("paris-time").textContent = `${String(parisTime.getHours()).padStart(2, "0")}:${String(parisTime.getMinutes()).padStart(2, "0")}`;
-       // Seoul (UTC+9)
-      const seoulTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
-      document.getElementById("seoul-time").textContent = `${String(seoulTime.getHours()).padStart(2, "0")}:${String(seoulTime.getMinutes()).padStart(2, "0")}`;
-      const sydneyTime = new Date(now.toLocaleString("en-US", { timeZone: "Australia/Sydney" }));
-      document.getElementById("sydney-time").textContent = `${String(sydneyTime.getHours()).padStart(2, "0")}:${String(sydneyTime.getMinutes()).padStart(2, "0")}`;
-      }
-    setInterval(updateClock, 1000);
+  // London
+  const londonTime = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit", hour12: false }).format(now);
+  document.getElementById("london-time").textContent = londonTime;
+
+  // Tokyo
+  const tokyoTime = new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", hour: "2-digit", minute: "2-digit",hour12: false }).format(now);
+  document.getElementById("tokyo-time").textContent = tokyoTime;
+
+  // Delhi
+  const delhiTime = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit",second:"2-digit",  hour12: false }).format(now);
+  document.getElementById("delhi-time").textContent = delhiTime;
+
+  // Dubai
+  const dubaiTime = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Dubai", hour: "2-digit", minute: "2-digit",  hour12: false }).format(now);
+  document.getElementById("dubai-time").textContent = dubaiTime;
+
+  // Paris
+  const parisTime = new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Paris", hour: "2-digit", minute: "2-digit", hour12: false }).format(now);
+  document.getElementById("paris-time").textContent = parisTime;
+
+  // Seoul
+  const seoulTime = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", hour12: false }).format(now);
+  document.getElementById("seoul-time").textContent = seoulTime;
+
+  // Sydney
+  const sydneyTime = new Intl.DateTimeFormat("en-US", { timeZone: "Australia/Sydney", hour: "2-digit", minute: "2-digit", hour12: false }).format(now);
+  document.getElementById("sydney-time").textContent = sydneyTime;
+}
+
+setInterval(updateClock, 1000);
+
 
     // Stopwatch
     let stopwatchInterval;
